@@ -12,6 +12,9 @@ namespace Employee_Management_System
         public string SecondName { get; set; }     
         public Qualification Qualification { get; set; }
 
+        public uint? ProjectID { get { return Project?.ID; } }
+        public uint? TaskId { get { return Task?.ID; } }
+
         protected Project Project { get; set; }
         protected Task Task { get; set; }
         
@@ -20,6 +23,11 @@ namespace Employee_Management_System
             this.FirstName = firstName;
             this.SecondName = secondName;
             this.Qualification = qualification;
+        }
+
+        public virtual void EndProject()
+        {
+            Project = null;
         }
 
         public virtual bool CompleteTask()

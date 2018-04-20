@@ -5,8 +5,48 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Employee_Management_System"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        
+        Title="Employee Management Sysytem" Height="550" Width="1125">
+    <Grid Margin="0,0,0.4,-1.2">
+        <DataGrid 
+            AutoGenerateColumns="True" 
+            Name="dgEmployees"
+            GridLinesVisibility="Vertical"
+            HeadersVisibility="All"
+            IsReadOnly="True"
+            HorizontalScrollBarVisibility="Visible"  
+            VerticalScrollBarVisibility="Visible" Margin="30,30,667,83"    />
+        <DataGrid 
+            AutoGenerateColumns="True" 
+            x:Name="dgProjects"
+            GridLinesVisibility="Vertical"
+            HeadersVisibility="All"
+            IsReadOnly="True"
+            HorizontalScrollBarVisibility="Visible"  
+            VerticalScrollBarVisibility="Visible" Margin="490,30,343,109"
+            ItemsSource="{Binding Path=projects, Mode=TwoWay}"  
+            CanUserAddRows="False">
+        </DataGrid>
+        <DataGrid 
+            AutoGenerateColumns="True" 
+            x:Name="dgTasks"
+            GridLinesVisibility="Vertical"
+            HeadersVisibility="All"
+            IsReadOnly="True"
+            HorizontalScrollBarVisibility="Visible"  
+            VerticalScrollBarVisibility="Visible" Margin="814,30,29,109"    />
+        <Button x:Name="btnAddEmployee" Content="Add" HorizontalAlignment="Left" Margin="69,471,0,0" VerticalAlignment="Top" Width="75"/>
+        <Button x:Name="btnEditEmployee" Content="Edit" HorizontalAlignment="Left" Margin="169,471,0,0" VerticalAlignment="Top" Width="75"/>
+        <Button x:Name="btnDeleteEmployee" Content="Delete" HorizontalAlignment="Left" Margin="268,471,0,0" VerticalAlignment="Top" Width="75"/>
+        <Button x:Name="btnAddProject" Content="Add" HorizontalAlignment="Left" Margin="699,437,0,0" VerticalAlignment="Top" Width="75" Click="btnAddProject_Click"/>
+        <Button x:Name="btnAddTask" Content="Add" HorizontalAlignment="Left" Margin="972,471,0,0" VerticalAlignment="Top" Width="75"/>
+        <TextBox x:Name="tbAddProject" HorizontalAlignment="Left" Height="19" Margin="534,437,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="160"/>
+        <TextBox x:Name="tbAddTask" HorizontalAlignment="Left" Height="19" Margin="834,471,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="133"/>
+        <Button x:Name="btnDeleteProject" Content="Delete" HorizontalAlignment="Left" Margin="699,471,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="0.5,0.5" Click="btnDeleteProject_Click"/>
+        <TextBox x:Name="tbDeleteProject" HorizontalAlignment="Left" Height="19" Margin="534,471,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="160"/>
+        <Label x:Name="lblAddProject" Content="Name:" HorizontalAlignment="Left" Margin="490,434,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="lblDeleteProject" Content="ID:" HorizontalAlignment="Left" Margin="490,468,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="lblEmployees" Content="Employees:" HorizontalAlignment="Left" Margin="26,10,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.812,-0.172"/>
+        <Label x:Name="lblProjects" Content="Projects:" HorizontalAlignment="Left" Margin="485,10,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.812,-0.172"/>
+        <Label x:Name="lblTasks" Content="Tasks:" HorizontalAlignment="Left" Margin="808,8,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.812,-0.172"/>
     </Grid>
 </Window>

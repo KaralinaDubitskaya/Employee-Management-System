@@ -6,21 +6,22 @@ using System.Threading.Tasks;
 
 namespace Employee_Management_System
 {
-    public class Project
+    public class Project : IIdentifiable
     {
-        public uint ID { get; private set; }
+        public uint ID { get; set; }
         public string Name { get; set; }
-        public List<Task> Tasks { get; private set; }
+        private List<Task> Tasks { get; set; }
 
-        public Project(string name)
+        public Project(uint id, string name)
         {
+            ID = id;
             Name = name;
             Tasks = new List<Task>();
         }
 
-        public void AddTask(uint id, string taskName)
+        public List<Task> GetTasks()
         {
-
+            return Tasks;
         }
     }
 }
