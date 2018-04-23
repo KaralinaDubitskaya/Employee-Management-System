@@ -10,5 +10,7 @@ namespace Employee_Management_System.Classes
     {
         public SolutionArchitect(string firstName, string secondName, Qualification qualification)
             : base(firstName, secondName, qualification) { }
+
+        public override string Job { get { return typeof(SolutionArchitect).Name; } }
     }
 }

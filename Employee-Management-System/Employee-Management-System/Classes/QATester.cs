@@ -11,6 +11,6 @@ namespace Employee_Management_System
         public QATester(string firstName, string secondName, Qualification qualification)
             : base(firstName, secondName, qualification) { }
 
-        public string Technologies { get; set; }
+        public override string Job { get { return typeof(QATester).Name; } }
     }
 }

@@ -12,35 +12,27 @@ namespace Employee_Management_System
         public string SecondName { get; set; }     
         public Qualification Qualification { get; set; }
 
-        public uint? ProjectID { get { return Project?.ID; } }
-        public uint? TaskId { get { return Task?.ID; } }
+        public virtual string Job { get { return typeof(Employee).Name; } }
 
         protected Project Project { get; set; }
-        protected Task Task { get; set; }
-        
+        public uint? ProjectID { get { return Project?.ID; } }
+
         public Employee(string firstName, string secondName, Qualification qualification)
         {
-            this.FirstName = firstName;
-            this.SecondName = secondName;
-            this.Qualification = qualification;
+            FirstName = firstName;
+            SecondName = secondName;
+            Qualification = qualification;
+            Project = null;
+        }
+
+        public void AddProject(Project project)
+        {
+            Project = project;
         }
 
         public virtual void EndProject()
         {
             Project = null;
-        }
-
-        public virtual bool CompleteTask()
-        {
-            if (this.Task == null)
-            {
-                return false;
-            }
-            else
-            {
-                Task = null;
-                return true;
-            }
         }
     }
 }

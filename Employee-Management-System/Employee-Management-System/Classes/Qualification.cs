@@ -8,9 +8,9 @@ namespace Employee_Management_System
 {
     public enum Qualification
     {
-        junior,
-        middle,
-        senior,
-        lead
+        Junior,
+        Middle,
+        Senior,
+        Lead
     }
 }

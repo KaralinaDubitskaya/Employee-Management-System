@@ -20,27 +20,35 @@ namespace Employee_Management_System
     /// </summary>
     public partial class MainWindow : Window
     {
-        private List<Project> projects;
-        private List<Employee> employees;
+        public List<Project> Projects { get; private set; }
+        public List<Employee> Employees { get; private set; }
 
-        public delegate void DeleteItem(uint id);
-        public event DeleteItem ProjectDeletedHandler;
+        private Project _selectedProject;
+        private Employee _selectedEmployee;
 
-        private int selectedProject;
+        public delegate void DeleteProjectDelegate(uint id);
+        public event DeleteProjectDelegate ProjectDeletedHandler;
+        public delegate void AddEmployeeDelegate(Employee employee);
+        private AddEmployeeDelegate AddEmployeeHandler;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            projects = new List<Project>();
-            employees = new List<Employee>();
+            Projects = new List<Project>();
+            Employees = new List<Employee>();
 
             ProjectDeletedHandler += DeleteProjectFromProjects;
             ProjectDeletedHandler += DeleteProjectFromEmployees;
 
-            selectedProject = 0;
+            AddEmployeeHandler = AddEmployee;
+
+            _selectedProject = null;
+
+            RefreshDataGrids();
         }
 
+        #region Add/Delete project
         private void btnAddProject_Click(object sender, RoutedEventArgs e)
         {
             // Create and add new project
@@ -48,7 +56,7 @@ namespace Employee_Management_System
 
             // Refresh the datagrid
             dgProjects.ItemsSource = null; 
-            dgProjects.ItemsSource = projects;
+            dgProjects.ItemsSource = Projects;
 
             // Clear the textbox
             tbAddProject.Text = "";
@@ -57,13 +65,13 @@ namespace Employee_Management_System
         // Create and add new project
         private void AddProject(string name)
         {
-            uint id = GetUniqueID(projects.ToArray<IIdentifiable>());
+            uint id = GetProjectID(Projects);
             Project project = new Project(id, name);
-            projects.Add(project);
+            Projects.Add(project);
         }
 
         // Return unique ID for the new item of the list
-        private uint GetUniqueID(IIdentifiable[] list)
+        private uint GetProjectID(List<Project> projects)
         {
             uint id = (uint)projects.Count() - 1;
 
@@ -72,9 +80,9 @@ namespace Employee_Management_System
             {
                 id++;
                 isUnique = true;
-                foreach (IIdentifiable elem in list)
+                foreach (Project project in projects)
                 {
-                    if (elem.ID == id)
+                    if (project.ID == id)
                     {
                         isUnique = false;
                         break;
@@ -89,24 +97,28 @@ namespace Employee_Management_System
         private void btnDeleteProject_Click(object sender, RoutedEventArgs e)
         {
             // Delete the project
-            uint id = Convert.ToUInt32(tbDeleteProject.Text);
-            ProjectDeletedHandler?.Invoke(id);
+            try
+            {
+                ProjectDeletedHandler?.Invoke(_selectedProject.ID);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Please, choose the project.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
 
             // Refresh the datagrid
             RefreshDataGrids();
-
-            // Clear the textbox
-            tbDeleteProject.Text = "";
         }
 
         // Delete project from projects list by id
         private void DeleteProjectFromProjects(uint id)
         {
-            foreach (Project project in projects)
+            foreach (Project project in Projects)
             {
                 if (project.ID == id)
                 {
-                    projects.Remove(project);
+                    Projects.Remove(project);
                     break;
                 }
             }
@@ -115,7 +127,7 @@ namespace Employee_Management_System
         // Clear project property of the employees
         private void DeleteProjectFromEmployees(uint id)
         {
-            foreach (Employee employee in employees)
+            foreach (Employee employee in Employees)
             {
                 if (employee.ProjectID == id)
                 {
@@ -124,21 +136,54 @@ namespace Employee_Management_System
                 }
             }
         }
+        #endregion
 
+        // Refresh info about employees, projects & tasks
         private void RefreshDataGrids()
         {
             // Projects
             dgProjects.ItemsSource = null;
-            dgProjects.ItemsSource = projects;
+            dgProjects.ItemsSource = Projects;
 
             // Employees
             dgEmployees.ItemsSource = null;
-            dgEmployees.ItemsSource = employees;
+            dgEmployees.ItemsSource = Employees;
+        }
 
-            // Tasks
-            dgTasks.ItemsSource = null;
-            Project selectedProject = dgProjects.SelectedItem as Project;
-            dgTasks.ItemsSource = selectedProject?.GetTasks();
+        private void btnAddEmployee_Click(object sender, RoutedEventArgs e)
+        {
+            AddEmployee form = new AddEmployee(Projects, null, AddEmployeeHandler);
+            form.ShowDialog();
+            RefreshDataGrids();
+        }
+
+        private void AddEmployee(Employee employee)
+        {
+            Employees.Add(employee);
+        }
+
+        private void btnEditEmployee_Click(object sender, RoutedEventArgs e)
+        {
+            AddEmployee form = new AddEmployee(Projects, _selectedEmployee, AddEmployeeHandler);
+            form.ShowDialog();
+            Employees.Remove(_selectedEmployee);
+            RefreshDataGrids();
+        }
+
+        private void dgProjects_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            _selectedProject = dgProjects.SelectedItem as Project;
+        }
+
+        private void dgEmployees_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            _selectedEmployee = dgEmployees.SelectedItem as Employee;
+        }
+
+        private void btnDeleteEmployee_Click(object sender, RoutedEventArgs e)
+        {
+            Employees.Remove(_selectedEmployee);
+            RefreshDataGrids();
         }
     }
 }

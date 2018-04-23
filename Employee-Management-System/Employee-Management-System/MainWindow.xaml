@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Employee_Management_System"
         mc:Ignorable="d"
-        Title="Employee Management Sysytem" Height="550" Width="1125">
-    <Grid Margin="0,0,0.4,-1.2">
+        Title="Employee Management Sysytem" Height="550" Width="825">
+    <Grid Margin="0,0,0,0">
         <DataGrid 
             AutoGenerateColumns="True" 
             Name="dgEmployees"
@@ -14,7 +14,7 @@
             HeadersVisibility="All"
             IsReadOnly="True"
             HorizontalScrollBarVisibility="Visible"  
-            VerticalScrollBarVisibility="Visible" Margin="30,30,667,83"    />
+            VerticalScrollBarVisibility="Visible" Margin="319,25,10.4,55.8" SelectionChanged="dgEmployees_SelectionChanged"/>
         <DataGrid 
             AutoGenerateColumns="True" 
             x:Name="dgProjects"
@@ -22,31 +22,18 @@
             HeadersVisibility="All"
             IsReadOnly="True"
             HorizontalScrollBarVisibility="Visible"  
-            VerticalScrollBarVisibility="Visible" Margin="490,30,343,109"
+            VerticalScrollBarVisibility="Visible" Margin="10,25,516.4,92.8"
             ItemsSource="{Binding Path=projects, Mode=TwoWay}"  
-            CanUserAddRows="False">
+            CanUserAddRows="False" SelectionChanged="dgProjects_SelectionChanged">
         </DataGrid>
-        <DataGrid 
-            AutoGenerateColumns="True" 
-            x:Name="dgTasks"
-            GridLinesVisibility="Vertical"
-            HeadersVisibility="All"
-            IsReadOnly="True"
-            HorizontalScrollBarVisibility="Visible"  
-            VerticalScrollBarVisibility="Visible" Margin="814,30,29,109"    />
-        <Button x:Name="btnAddEmployee" Content="Add" HorizontalAlignment="Left" Margin="69,471,0,0" VerticalAlignment="Top" Width="75"/>
-        <Button x:Name="btnEditEmployee" Content="Edit" HorizontalAlignment="Left" Margin="169,471,0,0" VerticalAlignment="Top" Width="75"/>
-        <Button x:Name="btnDeleteEmployee" Content="Delete" HorizontalAlignment="Left" Margin="268,471,0,0" VerticalAlignment="Top" Width="75"/>
-        <Button x:Name="btnAddProject" Content="Add" HorizontalAlignment="Left" Margin="699,437,0,0" VerticalAlignment="Top" Width="75" Click="btnAddProject_Click"/>
-        <Button x:Name="btnAddTask" Content="Add" HorizontalAlignment="Left" Margin="972,471,0,0" VerticalAlignment="Top" Width="75"/>
-        <TextBox x:Name="tbAddProject" HorizontalAlignment="Left" Height="19" Margin="534,437,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="160"/>
-        <TextBox x:Name="tbAddTask" HorizontalAlignment="Left" Height="19" Margin="834,471,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="133"/>
-        <Button x:Name="btnDeleteProject" Content="Delete" HorizontalAlignment="Left" Margin="699,471,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="0.5,0.5" Click="btnDeleteProject_Click"/>
-        <TextBox x:Name="tbDeleteProject" HorizontalAlignment="Left" Height="19" Margin="534,471,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="160"/>
-        <Label x:Name="lblAddProject" Content="Name:" HorizontalAlignment="Left" Margin="490,434,0,0" VerticalAlignment="Top"/>
-        <Label x:Name="lblDeleteProject" Content="ID:" HorizontalAlignment="Left" Margin="490,468,0,0" VerticalAlignment="Top"/>
-        <Label x:Name="lblEmployees" Content="Employees:" HorizontalAlignment="Left" Margin="26,10,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.812,-0.172"/>
-        <Label x:Name="lblProjects" Content="Projects:" HorizontalAlignment="Left" Margin="485,10,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.812,-0.172"/>
-        <Label x:Name="lblTasks" Content="Tasks:" HorizontalAlignment="Left" Margin="808,8,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.812,-0.172"/>
+        <Button x:Name="btnAddEmployee" Content="Add" HorizontalAlignment="Left" Margin="319,471,0,0" VerticalAlignment="Top" Width="163" Click="btnAddEmployee_Click"/>
+        <Button x:Name="btnEditEmployee" Content="Edit" HorizontalAlignment="Left" Margin="487,471,0,0" VerticalAlignment="Top" Width="162" Click="btnEditEmployee_Click"/>
+        <Button x:Name="btnDeleteEmployee" Content="Delete" HorizontalAlignment="Left" Margin="654,471,0,0" VerticalAlignment="Top" Width="151" Click="btnDeleteEmployee_Click"/>
+        <Button x:Name="btnAddProject" Content="Add" HorizontalAlignment="Left" Margin="224,437,0,0" VerticalAlignment="Top" Width="66" Click="btnAddProject_Click"/>
+        <TextBox x:Name="tbAddProject" HorizontalAlignment="Left" Height="19" Margin="54,437,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="165"/>
+        <Button x:Name="btnDeleteProject" Content="Delete" HorizontalAlignment="Left" Margin="10,471,0,0" VerticalAlignment="Top" Width="280" RenderTransformOrigin="0.5,0.5" Click="btnDeleteProject_Click"/>
+        <Label x:Name="lblAddProject" Content="Name:" HorizontalAlignment="Left" Margin="10,434,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="lblEmployees" Content="Employees:" HorizontalAlignment="Left" Margin="319,-1,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.812,-0.172"/>
+        <Label x:Name="lblProjects" Content="Projects:" HorizontalAlignment="Left" Margin="10,-1,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.812,-0.172"/>
     </Grid>
 </Window>
