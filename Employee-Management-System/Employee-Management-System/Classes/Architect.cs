@@ -18,8 +18,7 @@ namespace Employee_Management_System
 
         public Architect(string firstName, string secondName, Qualification qualification)
             : base(firstName, secondName, qualification) { }
-
-        [DataMember]
+        
         public override string Job { get { return typeof(Architect).Name; } }
     }
 }

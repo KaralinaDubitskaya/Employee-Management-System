@@ -19,8 +19,6 @@ using System.Xml.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Runtime.Serialization;
 using System.Reflection;
-using Newtonsoft;
-using Newtonsoft.Json;
 
 namespace Employee_Management_System
 {
@@ -229,7 +227,12 @@ namespace Employee_Management_System
         private void btnXmlSerialize_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog dlgSaveFile = new SaveFileDialog();
-            XmlSerializer serializer = new XmlSerializer(typeof(List<Employee>));
+
+            Type tEmployee = typeof(Employee);
+            Type[] jobs = Assembly.GetAssembly(tEmployee).GetTypes()
+                .Where(type => (type.IsSubclassOf(tEmployee) && !type.IsAbstract)).ToArray();
+
+            DataContractSerializer serializer = new DataContractSerializer(typeof(List<Employee>), jobs);
 
             dlgSaveFile.Filter = "xml files (*.xml)|*.xml";
 
@@ -239,7 +242,7 @@ namespace Employee_Management_System
                 {
                     using (Stream stream = File.Open(dlgSaveFile.FileName, FileMode.Create))
                     {
-                        serializer.Serialize(stream, Employees);
+                        serializer.WriteObject(stream, Employees);
                     }
                 }
                 catch (IOException)
@@ -253,7 +256,7 @@ namespace Employee_Management_System
         {
             Stream stream = null;
             OpenFileDialog dlgOpenFile = new OpenFileDialog();
-            XmlSerializer serializer = new XmlSerializer(typeof(List<Employee>));
+            DataContractSerializer serializer = new DataContractSerializer(typeof(List<Employee>));
 
             dlgOpenFile.Filter = "xml files (*.xml)|*.xml";
 
@@ -266,7 +269,7 @@ namespace Employee_Management_System
                         using (stream)
                         {
                             Employees.Clear();
-                            Employees = (List<Employee>)serializer.Deserialize(stream);
+                            Employees = (List<Employee>)serializer.ReadObject(stream);
                         }
                     }
                 }
@@ -311,27 +314,6 @@ namespace Employee_Management_System
 
         private void btnJSONSerialize_Click(object sender, RoutedEventArgs e)
         {
-            //SaveFileDialog dlgSaveFile = new SaveFileDialog();
-
-            //dlgSaveFile.Filter = "json files (*.json)|*.json";
-
-            //if (dlgSaveFile.ShowDialog() == true && dlgSaveFile.FileName != "")
-            //{
-            //    JsonSerializerSettings settings = new JsonSerializerSettings
-            //    {
-            //        TypeNameHandling = TypeNameHandling.All
-            //    };
-
-            //    try
-            //    {
-            //        File.WriteAllText(dlgSaveFile.FileName, JsonConvert.SerializeObject(Employees, settings));
-            //    }
-            //    catch (IOException)
-            //    {
-            //        MessageBox.Show("Cannot serialize data.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            //    }
-            //}
-
             SaveFileDialog dlgSaveFile = new SaveFileDialog();
 
             Type tEmployee = typeof(Employee);
@@ -360,28 +342,6 @@ namespace Employee_Management_System
 
         private void btnJSONDeserialize_Click(object sender, RoutedEventArgs e)
         {
-            //OpenFileDialog dlgOpenFile = new OpenFileDialog();
-
-            //dlgOpenFile.Filter = "json files (*.json)|*.json";
-
-            //if (dlgOpenFile.ShowDialog() == true)
-            //{
-            //    JsonSerializerSettings settings = new JsonSerializerSettings
-            //    {
-            //        TypeNameHandling = TypeNameHandling.All
-            //    };
-
-            //    try
-            //    {
-            //        Employees = JsonConvert.DeserializeObject<List<Employee>>
-            //            (File.ReadAllText(dlgOpenFile.FileName), settings);
-            //    }
-            //    catch (IOException)
-            //    {
-            //        MessageBox.Show("Cannot deserialize data.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            //    }
-            //}
-
             Stream stream = null;
             OpenFileDialog dlgOpenFile = new OpenFileDialog();
             DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(List<Employee>));

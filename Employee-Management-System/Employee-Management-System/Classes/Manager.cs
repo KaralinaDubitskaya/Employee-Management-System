@@ -16,8 +16,7 @@ namespace Employee_Management_System
 
         public Manager(string firstName, string secondName, Qualification qualification) 
          : base(firstName, secondName, qualification) { }
-
-        [DataMember]
+        
         public override string Job { get { return typeof(Manager).Name; } }
     }
 }

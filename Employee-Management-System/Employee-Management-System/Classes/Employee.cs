@@ -28,13 +28,12 @@ namespace Employee_Management_System
         public string SecondName { get; set; }
         [DataMember]
         public Qualification Qualification { get; set; }
+    
+        public virtual string Job { get { return typeof(Employee).Name; }}
 
         [DataMember]
-        public virtual string Job { get { return typeof(Employee).Name; } private set { } }
-
         protected Project Project { get; set; }
-        [DataMember]
-        public uint? ProjectID { get { return Project?.ID; } private set { } }
+        public uint? ProjectID { get { return Project?.ID; }}
 
         public Employee(string firstName, string secondName, Qualification qualification)
         {
