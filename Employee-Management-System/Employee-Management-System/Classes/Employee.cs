@@ -16,6 +16,10 @@ namespace Employee_Management_System
     [XmlInclude(typeof(SolutionArchitect))]
     [XmlInclude(typeof(SystemArchitect))]
     [DataContract]
+    [KnownType(typeof(Manager))]
+    [KnownType(typeof(QATester))]
+    [KnownType(typeof(SoftwareEngineer))]
+    [KnownType(typeof(Architect))]
     public abstract class Employee
     {
         [DataMember]
@@ -26,11 +30,11 @@ namespace Employee_Management_System
         public Qualification Qualification { get; set; }
 
         [DataMember]
-        public virtual string Job { get { return typeof(Employee).Name; } }
+        public virtual string Job { get { return typeof(Employee).Name; } private set { } }
 
         protected Project Project { get; set; }
         [DataMember]
-        public uint? ProjectID { get { return Project?.ID; } }
+        public uint? ProjectID { get { return Project?.ID; } private set { } }
 
         public Employee(string firstName, string secondName, Qualification qualification)
         {
