@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace Employee_Management_System
 {
-    public class Architect : Employee
+    public abstract class Architect : Employee
     {
+        public Architect() { }
+
         public Architect(string firstName, string secondName, Qualification qualification)
             : base(firstName, secondName, qualification) { }
 

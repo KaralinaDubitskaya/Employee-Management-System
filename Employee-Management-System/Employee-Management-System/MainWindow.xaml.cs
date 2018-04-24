@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,12 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
+using System.Xml.Serialization;
+using System.Runtime.Serialization.Json;
+using System.Runtime.Serialization;
+using System.Reflection;
 
 namespace Employee_Management_System
 {
@@ -152,9 +159,13 @@ namespace Employee_Management_System
 
         private void btnAddEmployee_Click(object sender, RoutedEventArgs e)
         {
-            AddEmployee form = new AddEmployee(Projects, null, AddEmployeeHandler);
-            form.ShowDialog();
-            RefreshDataGrids();
+            try
+            {
+                AddEmployee form = new AddEmployee(Projects, null, AddEmployeeHandler);
+                form.ShowDialog();
+                RefreshDataGrids();
+            }
+            catch (Exception) { }
         }
 
         private void AddEmployee(Employee employee)
@@ -164,10 +175,14 @@ namespace Employee_Management_System
 
         private void btnEditEmployee_Click(object sender, RoutedEventArgs e)
         {
-            AddEmployee form = new AddEmployee(Projects, _selectedEmployee, AddEmployeeHandler);
-            form.ShowDialog();
-            Employees.Remove(_selectedEmployee);
-            RefreshDataGrids();
+            try
+            {
+                AddEmployee form = new AddEmployee(Projects, _selectedEmployee, AddEmployeeHandler);
+                form.ShowDialog();
+                Employees.Remove(_selectedEmployee);
+                RefreshDataGrids();
+            }
+            catch (Exception) { }
         }
 
         private void dgProjects_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -183,6 +198,170 @@ namespace Employee_Management_System
         private void btnDeleteEmployee_Click(object sender, RoutedEventArgs e)
         {
             Employees.Remove(_selectedEmployee);
+            RefreshDataGrids();
+        }
+
+        private void btnBinSerialize_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog dlgSaveFile = new SaveFileDialog();
+            BinaryFormatter serializer = new BinaryFormatter();
+
+            dlgSaveFile.Filter = "dat files (*.dat)|*.dat";
+
+            if (dlgSaveFile.ShowDialog() == true && dlgSaveFile.FileName != "")
+            {
+                try
+                {
+                    using (Stream stream = File.Open(dlgSaveFile.FileName, FileMode.Create))
+                    {
+                        serializer.Serialize(stream, Employees);
+                    }
+                }
+                catch (IOException)
+                {
+                    MessageBox.Show("Cannot serialize data.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
+        private void btnXmlSerialize_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog dlgSaveFile = new SaveFileDialog();
+            XmlSerializer serializer = new XmlSerializer(typeof(List<Employee>));
+
+            dlgSaveFile.Filter = "xml files (*.xml)|*.xml";
+
+            if (dlgSaveFile.ShowDialog() == true && dlgSaveFile.FileName != "")
+            {
+                try
+                {
+                    using (Stream stream = File.Open(dlgSaveFile.FileName, FileMode.Create))
+                    {
+                        serializer.Serialize(stream, Employees);
+                    }
+                }
+                catch (IOException)
+                {
+                    MessageBox.Show("Cannot serialize data.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
+        private void btnXmlDeserialize_Click(object sender, RoutedEventArgs e)
+        {
+            Stream stream = null;
+            OpenFileDialog dlgOpenFile = new OpenFileDialog();
+            XmlSerializer serializer = new XmlSerializer(typeof(List<Employee>));
+
+            dlgOpenFile.Filter = "xml files (*.xml)|*.xml";
+
+            if (dlgOpenFile.ShowDialog() == true)
+            {
+                try
+                {
+                    if ((stream = dlgOpenFile.OpenFile()) != null)
+                    {
+                        using (stream)
+                        {
+                            Employees.Clear();
+                            Employees = (List<Employee>)serializer.Deserialize(stream);
+                        }
+                    }
+                }
+                catch (IOException)
+                {
+                    MessageBox.Show("Cannot deserialize data.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+
+            RefreshDataGrids();
+        }
+
+        private void btnBinDeserialize_Click(object sender, RoutedEventArgs e)
+        {
+            Stream stream = null;
+            OpenFileDialog dlgOpenFile = new OpenFileDialog();
+            BinaryFormatter serializer = new BinaryFormatter();
+
+            dlgOpenFile.Filter = "dat files (*.dat)|*.dat";
+
+            if (dlgOpenFile.ShowDialog() == true)
+            {
+                try
+                {
+                    if ((stream = dlgOpenFile.OpenFile()) != null)
+                    {
+                        using (stream)
+                        {
+                            Employees.Clear();
+                            Employees = (List<Employee>)serializer.Deserialize(stream);
+                        }
+                    }
+                }
+                catch (IOException)
+                {
+                    MessageBox.Show("Cannot deserialize data.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+
+            RefreshDataGrids();
+        }
+
+        private void btnJSONSerialize_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog dlgSaveFile = new SaveFileDialog();
+
+            Type tEmployee = typeof(Employee);
+            Type[] jobs = Assembly.GetAssembly(tEmployee).GetTypes()
+                .Where(type => (type.IsSubclassOf(tEmployee) && !type.IsAbstract)).ToArray();
+
+            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(List<Employee>), jobs);
+
+            dlgSaveFile.Filter = "json files (*.json)|*.json";
+
+            if (dlgSaveFile.ShowDialog() == true && dlgSaveFile.FileName != "")
+            {
+                try
+                {
+                    using (Stream stream = File.Open(dlgSaveFile.FileName, FileMode.Create))
+                    {
+                        serializer.WriteObject(stream, Employees);
+                    }
+                }
+                catch (IOException)
+                {
+                    MessageBox.Show("Cannot serialize data.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
+        private void btnJSONDeserialize_Click(object sender, RoutedEventArgs e)
+        {
+            Stream stream = null;
+            OpenFileDialog dlgOpenFile = new OpenFileDialog();
+            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(List<Employee>));
+
+            dlgOpenFile.Filter = "json files (*.json)|*.json";
+
+            if (dlgOpenFile.ShowDialog() == true)
+            {
+                try
+                {
+                    if ((stream = dlgOpenFile.OpenFile()) != null)
+                    {
+                        using (stream)
+                        {
+                            Employees.Clear();
+                            Employees = (List<Employee>)serializer.ReadObject(stream);
+                        }
+                    }
+                }
+                catch (IOException)
+                {
+                    MessageBox.Show("Cannot deserialize data.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+
             RefreshDataGrids();
         }
     }

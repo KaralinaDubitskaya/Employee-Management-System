@@ -63,9 +63,13 @@ namespace Employee_Management_System
             {
                 tbFirstName.Text = employee.FirstName;
                 tbSecondName.Text = employee.SecondName;
-                cbJob.SelectedIndex = 0;
-                cbQualification.SelectedIndex = 0;
-                cbProject.SelectedIndex = 0;
+                cbJob.SelectedItem = employee.Job;
+                cbQualification.SelectedIndex = (int)employee.Qualification;
+                cbProject.SelectedItem = employee.ProjectID;
+                if (employee.ProjectID == null)
+                {
+                    cbProject.SelectedIndex = 0;
+                }
             }
         }
 
@@ -82,7 +86,7 @@ namespace Employee_Management_System
             string secondName = tbSecondName.Text;
             Qualification qualification = (Qualification)cbQualification.SelectedIndex;
 
-            Employee employee = (Employee)Activator.CreateInstance(job, firstName, secondName, qualification);
+            dynamic employee = Activator.CreateInstance(job, firstName, secondName, qualification);
             if (cbProject.SelectedIndex != 0)
             {
                 employee.AddProject(_projects[cbProject.SelectedIndex - 1]);
