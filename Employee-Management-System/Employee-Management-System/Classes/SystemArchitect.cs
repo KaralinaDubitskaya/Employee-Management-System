@@ -9,7 +9,7 @@ using System.Runtime.Serialization;
 namespace Employee_Management_System
 {
     [Serializable]
-    [DataContract(Name = "SystemArchitect")]
+    [DataContract]
     public sealed class SystemArchitect : Architect
     {
         public SystemArchitect() { }

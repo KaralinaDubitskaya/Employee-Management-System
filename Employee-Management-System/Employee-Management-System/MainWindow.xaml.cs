@@ -72,6 +72,7 @@ namespace Employee_Management_System
         // Create and add new project
         private void AddProject(string name)
         {
+            if (name?.Length == 0) { return; }
             uint id = GetProjectID(Projects);
             Project project = new Project(id, name);
             Projects.Add(project);
@@ -144,8 +145,7 @@ namespace Employee_Management_System
             }
         }
         #endregion
-
-        // Refresh info about employees, projects & tasks
+        
         private void RefreshDataGrids()
         {
             // Projects
@@ -155,8 +155,25 @@ namespace Employee_Management_System
             // Employees
             dgEmployees.ItemsSource = null;
             dgEmployees.ItemsSource = Employees;
+        }        
+        private void UpdateProjectsList()
+        {
+            foreach (Employee employee in Employees)
+            {
+                Project project = employee.GetProject();
+                if (project != null)
+                {
+                    int index = Projects.FindIndex(item => item.ID == project.ID);
+                    if (index < 0)
+                    {
+                        Projects.Add(project);
+                    }
+                }
+            }
         }
 
+        #region Add/Edit/Delete Employee
+        #region AddEmployee
         private void btnAddEmployee_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -172,7 +189,9 @@ namespace Employee_Management_System
         {
             Employees.Add(employee);
         }
+        #endregion
 
+        #region Edit/Delete Employee
         private void btnEditEmployee_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -200,7 +219,11 @@ namespace Employee_Management_System
             Employees.Remove(_selectedEmployee);
             RefreshDataGrids();
         }
+        #endregion
+        #endregion
 
+        #region Serialization
+        #region Binary serialization
         private void btnBinSerialize_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog dlgSaveFile = new SaveFileDialog();
@@ -224,6 +247,39 @@ namespace Employee_Management_System
             }
         }
 
+        private void btnBinDeserialize_Click(object sender, RoutedEventArgs e)
+        {
+            Stream stream = null;
+            OpenFileDialog dlgOpenFile = new OpenFileDialog();
+            BinaryFormatter serializer = new BinaryFormatter();
+
+            dlgOpenFile.Filter = "dat files (*.dat)|*.dat";
+
+            if (dlgOpenFile.ShowDialog() == true)
+            {
+                try
+                {
+                    if ((stream = dlgOpenFile.OpenFile()) != null)
+                    {
+                        using (stream)
+                        {
+                            Employees.Clear();
+                            Employees = (List<Employee>)serializer.Deserialize(stream);
+                        }
+                    }
+                }
+                catch (IOException)
+                {
+                    MessageBox.Show("Cannot deserialize data.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+
+            UpdateProjectsList();
+            RefreshDataGrids();
+        }
+        #endregion
+
+        #region XML serialization
         private void btnXmlSerialize_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog dlgSaveFile = new SaveFileDialog();
@@ -279,39 +335,12 @@ namespace Employee_Management_System
                 }
             }
 
+            UpdateProjectsList();
             RefreshDataGrids();
         }
+        #endregion
 
-        private void btnBinDeserialize_Click(object sender, RoutedEventArgs e)
-        {
-            Stream stream = null;
-            OpenFileDialog dlgOpenFile = new OpenFileDialog();
-            BinaryFormatter serializer = new BinaryFormatter();
-
-            dlgOpenFile.Filter = "dat files (*.dat)|*.dat";
-
-            if (dlgOpenFile.ShowDialog() == true)
-            {
-                try
-                {
-                    if ((stream = dlgOpenFile.OpenFile()) != null)
-                    {
-                        using (stream)
-                        {
-                            Employees.Clear();
-                            Employees = (List<Employee>)serializer.Deserialize(stream);
-                        }
-                    }
-                }
-                catch (IOException)
-                {
-                    MessageBox.Show("Cannot deserialize data.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
-
-            RefreshDataGrids();
-        }
-
+        #region JSON serialization
         private void btnJSONSerialize_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog dlgSaveFile = new SaveFileDialog();
@@ -367,7 +396,10 @@ namespace Employee_Management_System
                 }
             }
 
+            UpdateProjectsList();
             RefreshDataGrids();
         }
+        #endregion
+        #endregion
     }
 }

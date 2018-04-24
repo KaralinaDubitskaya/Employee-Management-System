@@ -50,6 +50,11 @@ namespace Employee_Management_System
             Project = project;
         }
 
+        public Project GetProject()
+        {
+            return Project;
+        }
+
         public virtual void EndProject()
         {
             Project = null;
