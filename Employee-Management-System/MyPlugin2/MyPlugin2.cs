@@ -19,38 +19,30 @@ namespace MyPlugin2
             pluginAttr.Value = this.Name;
             root.Attributes.Append(pluginAttr);
 
-            XmlNodeList nodes = xmlDoc.DocumentElement.ChildNodes;
-
-            foreach (XmlNode xn in nodes)
+            while (root.FirstChild.Name == "Employee")
             {
-                if (xn.Name != null)
-                {
-                    XmlNode node = xmlDoc.CreateNode(XmlNodeType.Element, xn.Attributes[0].Value, xmlDoc.DocumentElement.NamespaceURI);
-                    node.InnerXml = xn.InnerXml;
-                    XmlNode parent = xn.ParentNode;
-                    parent.AppendChild(node);
-                    parent.RemoveChild(xn);
-                }
+                XmlNode xn = root.FirstChild;
+                XmlNode node = xmlDoc.CreateNode(XmlNodeType.Element, xn.Attributes[0].Value, xmlDoc.DocumentElement.NamespaceURI);
+                node.InnerXml = xn.InnerXml;
+                root.AppendChild(node);
+                root.RemoveChild(xn);
             }
         }
 
         public void Decode(ref XmlDocument xmlDoc)
         {
-            XmlNodeList nodes = xmlDoc.DocumentElement.ChildNodes;
+            XmlNode root = xmlDoc.DocumentElement;
 
-            foreach (XmlNode xn in nodes)
+            while (root.FirstChild.Name != "Employee")
             {
-                if (xn.Name == "Employee")
-                {
-                    XmlNode node = xmlDoc.CreateNode(XmlNodeType.Element, "Employee", xn.ParentNode.NamespaceURI);
-                    XmlAttribute attr = xmlDoc.CreateAttribute("i", "type", xn.ParentNode.NamespaceURI);
-                    attr.Value = xn.Name;
-                    node.Attributes.Prepend(attr);
-                    node.InnerXml = xn.InnerXml;
-                    XmlNode parent = xn.ParentNode;
-                    parent.AppendChild(node);
-                    parent.RemoveChild(xn);
-                }
+                XmlNode xn = root.FirstChild;
+                XmlNode node = xmlDoc.CreateNode(XmlNodeType.Element, "Employee", root.NamespaceURI);
+                XmlAttribute attr = xmlDoc.CreateAttribute("i", "type", root.NamespaceURI);
+                attr.Value = xn.Name;
+                node.Attributes.Prepend(attr);
+                node.InnerXml = xn.InnerXml;
+                root.AppendChild(node);
+                root.RemoveChild(xn);
             }
         }
     }

@@ -352,6 +352,7 @@ namespace Employee_Management_System
                 {
                     MessageBox.Show("Cannot deserialize data.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
+                catch (Exception) { }
             }
 
             UpdateProjectsList();
@@ -475,7 +476,7 @@ namespace Employee_Management_System
             else
             {
                 MessageBox.Show("Plugin not found.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return null;
+                return new MemoryStream();
             }
         }
 
