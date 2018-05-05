@@ -20,7 +20,7 @@ using System.Runtime.Serialization.Json;
 using System.Runtime.Serialization;
 using System.Reflection;
 using PluginContracts;
-using System.Xml;
+using Geffe;
 
 namespace Employee_Management_System
 {
@@ -62,7 +62,7 @@ namespace Employee_Management_System
             {
                 foreach (IPlugin plugin in _plugins)
                 {
-                     cbPlugins.Items.Add(plugin.Name);
+                     cbPlugins.Items.Add(plugin);
                 }
             }
 
@@ -249,9 +249,14 @@ namespace Employee_Management_System
             {
                 try
                 {
-                    using (Stream stream = File.Open(dlgSaveFile.FileName, FileMode.Create))
+                    using (MemoryStream stream = new MemoryStream())
                     {
                         serializer.Serialize(stream, Employees);
+                        byte[] buffer = EncryptStream(stream);
+                        using (FileStream st = File.Open(dlgSaveFile.FileName, FileMode.Create))
+                        {
+                            st.Write(buffer, 0, buffer.Length);
+                        }
                     }
                 }
                 catch (IOException)
@@ -277,8 +282,12 @@ namespace Employee_Management_System
                     {
                         using (stream)
                         {
-                            Employees.Clear();
-                            Employees = (List<Employee>)serializer.Deserialize(stream);
+                            byte[] buffer = DecryptStream(stream);
+                            using (MemoryStream st = new MemoryStream(buffer))
+                            {
+                                Employees.Clear();
+                                Employees = (List<Employee>)serializer.Deserialize(st);
+                            }
                         }
                     }
                 }
@@ -313,10 +322,10 @@ namespace Employee_Management_System
                     using (MemoryStream stream = new MemoryStream())
                     {
                         serializer.WriteObject(stream, Employees);
-                        XmlDocument xmlDoc = EncodeXml(stream);
-                        using (XmlTextWriter writer = new XmlTextWriter(dlgSaveFile.FileName, null))
+                        byte[] buffer = EncryptStream(stream);
+                        using (FileStream st = File.Open(dlgSaveFile.FileName, FileMode.Create))
                         {
-                            xmlDoc.Save(writer);
+                            st.Write(buffer, 0, buffer.Length);
                         }
                     }
                 }
@@ -343,8 +352,12 @@ namespace Employee_Management_System
                     {
                         using (stream)
                         {
-                            Employees.Clear();
-                            Employees = (List<Employee>)serializer.ReadObject(DecodeXml(stream));
+                            byte[] buffer = DecryptStream(stream);
+                            using (MemoryStream st = new MemoryStream(buffer))
+                            {
+                                Employees.Clear();
+                                Employees = (List<Employee>)serializer.ReadObject(st);
+                            }
                         }
                     }
                 }
@@ -376,9 +389,14 @@ namespace Employee_Management_System
             {
                 try
                 {
-                    using (Stream stream = File.Open(dlgSaveFile.FileName, FileMode.Create))
+                    using (MemoryStream stream = new MemoryStream())
                     {
                         serializer.WriteObject(stream, Employees);
+                        byte[] buffer = EncryptStream(stream);
+                        using (FileStream st = File.Open(dlgSaveFile.FileName, FileMode.Create))
+                        {
+                            st.Write(buffer, 0, buffer.Length);
+                        }
                     }
                 }
                 catch (IOException)
@@ -404,8 +422,12 @@ namespace Employee_Management_System
                     {
                         using (stream)
                         {
-                            Employees.Clear();
-                            Employees = (List<Employee>)serializer.ReadObject(stream);
+                            byte[] buffer = DecryptStream(stream);
+                            using (MemoryStream st = new MemoryStream(buffer))
+                            {
+                                Employees.Clear();
+                                Employees = (List<Employee>)serializer.ReadObject(st);
+                            }
                         }
                     }
                 }
@@ -421,78 +443,44 @@ namespace Employee_Management_System
         #endregion
         #endregion
 
-        // Tranform Xml before writing to file
-        private XmlDocument EncodeXml(Stream stream)
+        #region Encrypt/Decrypt Stream
+        private byte[] EncryptStream(MemoryStream stream)
         {
-            // Prepare the stream for reading
-            stream.Flush();
-            stream.Position = 0;
-
-            // Load Xml to XmlDocument
-            XmlDocument xmlDoc = new XmlDocument();
-            xmlDoc.Load(stream);
-
-            // Transform Xml
-            IPlugin plugin = GetPlugin((string)cbPlugins.SelectedItem);
-            plugin?.Encode(ref xmlDoc);
-
-            return xmlDoc;
-        }
-        
-        // Tranform Xml after reading from file
-        private MemoryStream DecodeXml(Stream fileStream)
-        {
-            // Load Xml from the stream
-            XmlDocument xmlDoc = new XmlDocument();
-            xmlDoc.Load(fileStream);
-
-            string pluginName = xmlDoc.DocumentElement.Attributes["Plugin"]?.Value;
-            if (pluginName == null)
-            {
-                // Write Xml to the stream
-                MemoryStream xmlStream = new MemoryStream();
-                xmlDoc.Save(xmlStream);
-                xmlStream.Flush();
-                xmlStream.Position = 0;
-
-                return xmlStream;
-            }
-
-            // Tranform Xml
-            IPlugin plugin = GetPlugin(pluginName);
-            if (plugin != null)
-            {
-                plugin.Decode(ref xmlDoc);
-
-                // Write Xml to the stream
-                MemoryStream xmlStream = new MemoryStream();
-                xmlDoc.Save(xmlStream);
-                xmlStream.Flush();
-                xmlStream.Position = 0;
-
-                return xmlStream;
-            }
-            else
-            {
-                MessageBox.Show("Plugin not found.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return null;
-            }
+            byte[] buffer = stream.ToArray();
+            //if (cbPlugins.SelectedIndex != 0)
+            //{
+            //    IPlugin plugin = cbPlugins.SelectedItem as IPlugin;
+            //    //IPlugin plugin = Activator.CreateInstance(typeof()) as IPlugin;
+            //    plugin.Encrypt(buffer);
+            //}
+            //IPlugin plugin = Activator.CreateInstance(typeof(Geffe.Geffe)) as IPlugin;
+            //plugin.Encrypt(buffer);
+            return buffer;
         }
 
-        // Return plugin selected by user 
-        private IPlugin GetPlugin(string name)
+        private byte[] DecryptStream(Stream stream)
         {
-            if (name != "None" && name != null)
-            {
-                foreach (IPlugin plugin in _plugins)
-                {
-                    if (name == plugin.Name)
-                    {
-                        return plugin;
-                    }
-                }
-            }
-            return null;
+            byte[] buffer = StreamToArray(stream);
+            //if (cbPlugins.SelectedIndex != 0)
+            //{
+            //    var pl = _plugins[cbPlugins.SelectedIndex - 1];
+            //    Type type = pl.GetType();
+            //    IPlugin plugin = Activator.CreateInstance(type) as IPlugin;
+            //    plugin.Decrypt(buffer);
+            //}
+            //IPlugin plugin = Activator.CreateInstance(typeof(Geffe.Geffe)) as IPlugin;
+            //plugin.Decrypt(buffer);
+            return buffer;
         }
+
+        private byte[] StreamToArray(Stream input)
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                input.CopyTo(ms);
+                return ms.ToArray();
+            }
+        }
+        #endregion
     }
 }

@@ -20,7 +20,7 @@ namespace Employee_Management_System
     [KnownType(typeof(QATester))]
     [KnownType(typeof(SoftwareEngineer))]
     [KnownType(typeof(Architect))]
-    public class Employee
+    public abstract class Employee
     {
         [DataMember]
         public string FirstName { get; set; }
