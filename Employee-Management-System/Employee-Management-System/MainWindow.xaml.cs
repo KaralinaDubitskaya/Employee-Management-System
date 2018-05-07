@@ -302,7 +302,7 @@ namespace Employee_Management_System
             Type[] jobs = Assembly.GetAssembly(tEmployee).GetTypes()
                 .Where(type => (type.IsSubclassOf(tEmployee) && !type.IsAbstract)).ToArray();
 
-            DataContractSerializer serializer = new DataContractSerializer(typeof(List<Employee>), jobs);
+            XMLTransformer serializer = new XMLTransformer(typeof(List<Employee>), jobs);
 
             dlgSaveFile.Filter = "xml files (*.xml)|*.xml";
 
@@ -313,7 +313,7 @@ namespace Employee_Management_System
                     using (MemoryStream stream = new MemoryStream())
                     {
                         serializer.WriteObject(stream, Employees);
-                        XmlDocument xmlDoc = EncodeXml(stream);
+                        XmlDocument xmlDoc = serializer.EncodeXml(stream, (string)cbPlugins.SelectedItem, _plugins);
                         using (XmlTextWriter writer = new XmlTextWriter(dlgSaveFile.FileName, null))
                         {
                             xmlDoc.Save(writer);
@@ -331,7 +331,7 @@ namespace Employee_Management_System
         {
             Stream stream = null;
             OpenFileDialog dlgOpenFile = new OpenFileDialog();
-            DataContractSerializer serializer = new DataContractSerializer(typeof(List<Employee>));
+            XMLTransformer serializer = new XMLTransformer(typeof(List<Employee>));
 
             dlgOpenFile.Filter = "xml files (*.xml)|*.xml";
 
@@ -344,7 +344,7 @@ namespace Employee_Management_System
                         using (stream)
                         {
                             Employees.Clear();
-                            Employees = (List<Employee>)serializer.ReadObject(DecodeXml(stream));
+                            Employees = (List<Employee>)serializer.ReadObject(serializer.DecodeXml(stream, _plugins));
                         }
                     }
                 }
@@ -421,79 +421,5 @@ namespace Employee_Management_System
         }
         #endregion
         #endregion
-
-        // Tranform Xml before writing to file
-        private XmlDocument EncodeXml(Stream stream)
-        {
-            // Prepare the stream for reading
-            stream.Flush();
-            stream.Position = 0;
-
-            // Load Xml to XmlDocument
-            XmlDocument xmlDoc = new XmlDocument();
-            xmlDoc.Load(stream);
-
-            // Transform Xml
-            IPlugin plugin = GetPlugin((string)cbPlugins.SelectedItem);
-            plugin?.Encode(ref xmlDoc);
-
-            return xmlDoc;
-        }
-        
-        // Tranform Xml after reading from file
-        private MemoryStream DecodeXml(Stream fileStream)
-        {
-            // Load Xml from the stream
-            XmlDocument xmlDoc = new XmlDocument();
-            xmlDoc.Load(fileStream);
-
-            string pluginName = xmlDoc.DocumentElement.Attributes["Plugin"]?.Value;
-            if (pluginName == null)
-            {
-                // Write Xml to the stream
-                MemoryStream xmlStream = new MemoryStream();
-                xmlDoc.Save(xmlStream);
-                xmlStream.Flush();
-                xmlStream.Position = 0;
-
-                return xmlStream;
-            }
-
-            // Tranform Xml
-            IPlugin plugin = GetPlugin(pluginName);
-            if (plugin != null)
-            {
-                plugin.Decode(ref xmlDoc);
-
-                // Write Xml to the stream
-                MemoryStream xmlStream = new MemoryStream();
-                xmlDoc.Save(xmlStream);
-                xmlStream.Flush();
-                xmlStream.Position = 0;
-
-                return xmlStream;
-            }
-            else
-            {
-                MessageBox.Show("Plugin not found.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return new MemoryStream();
-            }
-        }
-
-        // Return plugin selected by user 
-        private IPlugin GetPlugin(string name)
-        {
-            if (name != "None" && name != null)
-            {
-                foreach (IPlugin plugin in _plugins)
-                {
-                    if (name == plugin.Name)
-                    {
-                        return plugin;
-                    }
-                }
-            }
-            return null;
-        }
     }
 }
