@@ -41,15 +41,8 @@ namespace Employee_Management_System
             stream.Flush();
             stream.Position = 0;
 
-            // Load Xml to XmlDocument
-            XmlDocument xmlDoc = new XmlDocument();
-            xmlDoc.Load(stream);
-
-            // Transform Xml
-            IPlugin plugin = GetPlugin(pluginName, plugins);
-            plugin?.Encode(ref xmlDoc);
-
-            return xmlDoc;
+            XMLEncoder encoder = new XMLEncoder(GetPlugin(pluginName, plugins));
+            return encoder.Encode(stream);
         }
 
         // Tranform Xml after reading from file

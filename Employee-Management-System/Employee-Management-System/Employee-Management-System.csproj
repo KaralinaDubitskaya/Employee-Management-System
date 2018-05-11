@@ -62,6 +62,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="XMLEncoder.cs" />
+    <Compile Include="IXMLEncoder.cs" />
     <Compile Include="XMLSerializer.cs" />
     <Compile Include="XMLTranformer.cs" />
     <Page Include="Classes\AddProject.xaml">
