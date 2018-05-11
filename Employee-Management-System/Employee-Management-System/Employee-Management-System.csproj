@@ -62,14 +62,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="EmployeeManager.cs" />
+    <Compile Include="IEmployeeManager.cs" />
     <Compile Include="XMLEncoder.cs" />
     <Compile Include="IXMLEncoder.cs" />
     <Compile Include="XMLSerializer.cs" />
     <Compile Include="XMLTranformer.cs" />
-    <Page Include="Classes\AddProject.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="AddEmployee.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -81,9 +79,6 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Classes\AddProject.xaml.cs">
-      <DependentUpon>AddProject.xaml</DependentUpon>
     </Compile>
     <Compile Include="Classes\Architect.cs" />
     <Compile Include="Classes\Employee.cs" />

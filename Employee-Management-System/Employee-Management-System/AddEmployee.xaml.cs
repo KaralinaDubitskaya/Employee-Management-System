@@ -22,13 +22,12 @@ namespace Employee_Management_System
     {
         private Type[] _jobs;
         private List<Project> _projects;
-        private MainWindow.AddEmployeeDelegate AddEmployeeHandler;
+        private IEmployeeManager _employeeManager;
 
-        public AddEmployee(List<Project> projects, Employee employee, MainWindow.AddEmployeeDelegate AddEmployee)
+        public AddEmployee(List<Project> projects, Employee employee)
         {
             InitializeComponent();
-
-            AddEmployeeHandler = AddEmployee;
+            
             _projects = projects;
 
             Type tEmployee = typeof(Employee);
@@ -73,6 +72,11 @@ namespace Employee_Management_System
             }
         }
 
+        public void SetEmployeeHandler(IEmployeeManager employeeManager)
+        {
+            _employeeManager = employeeManager;
+        }
+
         private void btnOk_Click(object sender, RoutedEventArgs e)
         {
             if (tbFirstName.Text.Length == 0 || tbSecondName.Text.Length == 0)
@@ -92,7 +96,7 @@ namespace Employee_Management_System
                 employee.AddProject(_projects[cbProject.SelectedIndex - 1]);
             }
 
-            AddEmployeeHandler(employee);
+            _employeeManager?.AddEmployee(employee);
             Close();
         }
     }

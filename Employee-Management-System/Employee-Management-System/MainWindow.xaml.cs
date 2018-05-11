@@ -38,7 +38,7 @@ namespace Employee_Management_System
         public delegate void DeleteProjectDelegate(uint id);
         public event DeleteProjectDelegate ProjectDeletedHandler;
         public delegate void AddEmployeeDelegate(Employee employee);
-        private AddEmployeeDelegate _AddEmployeeHandler;
+        public AddEmployeeDelegate AddEmployeeHandler;
 
         private List<IPlugin> _plugins;
 
@@ -52,7 +52,7 @@ namespace Employee_Management_System
             ProjectDeletedHandler += DeleteProjectFromProjects;
             ProjectDeletedHandler += DeleteProjectFromEmployees;
 
-            _AddEmployeeHandler = AddEmployee;
+            AddEmployeeHandler = AddEmployee;
             _selectedProject = null;
             _plugins = PluginLoader.LoadPlugins(Directory.GetCurrentDirectory() + @"\Plugins\");
 
@@ -192,7 +192,9 @@ namespace Employee_Management_System
         {
             try
             {
-                AddEmployee form = new AddEmployee(Projects, null, _AddEmployeeHandler);
+                AddEmployee form = new AddEmployee(Projects, null);
+                EmployeeManager employeeManager = new EmployeeManager(this);
+                form.SetEmployeeHandler(employeeManager);
                 form.ShowDialog();
                 RefreshDataGrids();
             }
@@ -210,7 +212,9 @@ namespace Employee_Management_System
         {
             try
             {
-                AddEmployee form = new AddEmployee(Projects, _selectedEmployee, _AddEmployeeHandler);
+                AddEmployee form = new AddEmployee(Projects, _selectedEmployee);
+                EmployeeManager employeeManager = new EmployeeManager(this);
+                form.SetEmployeeHandler(employeeManager);
                 form.ShowDialog();
                 Employees.Remove(_selectedEmployee);
                 RefreshDataGrids();
